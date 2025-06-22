@@ -2,6 +2,7 @@
 
 namespace App\Services\Shipment;
 
+use App\DTOs\Admin\UpdateShipmentStatusDTO;
 use App\DTOs\User\CreateShipmentDTO;
 use App\Enums\ShipmentStatusEnum;
 use App\Http\Resources\Shipment\ShipmentResource;
@@ -179,5 +180,29 @@ class ShipmentService
         }
 
         return $this->serviceResponse('Shipment records', true, $result);
+    }
+
+    public function updateShipmentStatus(UpdateShipmentStatusDTO $dto, int $shipmentId, Request $request): array
+    {
+        $shipment = $this->shipmentRepository->findShipmentById($shipmentId);
+
+        if (!$shipment) {
+            return $this->serviceResponse('Shipment record not found');
+        }
+
+        Log::info('Updating shipment status by Admin', ['shipment_id' => $shipmentId, 'user_email' => $dto->updatedBy->getEmail()]);;
+
+        $result = $this->shipmentRepository->updateShipmentStatus($dto, $shipmentId);
+
+        if (! $result) {
+            Log::warning('Failed to update shipment status', ['shipment_id' => $shipmentId, 'user_email' => $dto->updatedBy->getEmail()]);;;
+            return $this->serviceResponse('Shipment status not updated');
+        }
+
+        // Log the action
+        $shipmentStatusUpdateLogData = $this->prepareShipmentLogData('Shipment status updated', $dto->updatedBy->getId(), $request->ip(), $dto->toShipmentUpdateStatusData());
+        HandleShipmentLogJob::dispatch($shipmentStatusUpdateLogData)->delay(now()->addSeconds(5));
+
+        return $this->serviceResponse('Shipment status updated', true, ShipmentResource::make($result));
     }
 }

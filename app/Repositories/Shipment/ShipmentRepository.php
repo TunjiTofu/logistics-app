@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Shipment;
 
+use App\DTOs\Admin\UpdateShipmentStatusDTO;
 use App\Models\Shipment;
 use App\Utility\Constants;
 use Illuminate\Database\QueryException;
@@ -9,6 +10,16 @@ use Illuminate\Support\Facades\Log;
 
 class ShipmentRepository implements ShipmentRepositoryInterface
 {
+    public function findShipmentById(int $id): ?Shipment
+    {
+        try {
+            return Shipment::find($id);
+        } catch (QueryException $e) {
+            Log::error("Shipment query by Id failed: {$e->getMessage()}", [$e]);
+            return null;
+        }
+    }
+
     public function createShipment(array $data): ?Shipment
     {
         try {
@@ -42,4 +53,20 @@ class ShipmentRepository implements ShipmentRepositoryInterface
             return null;
         }
     }
+
+    public function updateShipmentStatus(UpdateShipmentStatusDTO $dto, int $shipmentId)
+    {
+        try {
+            $shipment = Shipment::find($shipmentId);
+            $shipment->status = $dto->status->value;
+            $shipment->save();
+
+            return $shipment->fresh();
+
+        } catch (QueryException $e) {
+            Log::error("Shipment retrieval query failed: {$e->getMessage()}", [$e]);
+            return null;
+        }
+    }
+
 }

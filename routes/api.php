@@ -23,9 +23,7 @@ Route::prefix('v1')->group(function () {
     //Admin Routes
     Route::prefix('admin')->group(function () {
         Route::middleware(['auth:sanctum',  'ability:admin-access'])->group(function () {
-            Route::prefix('shipment')->group(function () {
                 require __DIR__.'/v1/admin/shipment.php';
-            });
         });
     });
 
