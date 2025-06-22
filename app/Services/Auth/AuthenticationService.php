@@ -3,6 +3,7 @@
 namespace App\Services\Auth;
 
 use App\DTOs\User\CreateUserDTO;
+use App\DTOs\User\UserLoginDTO;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Repositories\User\UserRepository;
@@ -42,6 +43,33 @@ class AuthenticationService
         ];
 
         return $this->serviceResponse('User created successfully', true, $data);
+    }
+
+    public function login(UserLoginDTO $dto): array
+    {
+        Log::info('login in user', ['email' => $dto->email]);
+
+        $user = $this->userRepository->getUserByEmail($dto->email);
+
+        if (!$user) {
+            Log::info('user record not found');;
+            return $this->serviceResponse('User record not found');;
+        }
+
+        if (! $user->checkPassword($dto->password)) {
+            Log::info('Incorrect Password Supplied');
+            return $this->serviceResponse('Incorrect Password');
+        }
+
+        Log::info('user login successful');
+        $user->markAsLoggedIn();
+
+        $data = [
+            'token' => generateAuthToken($user, $dto->email),
+            'user' => UserResource::make($user),
+        ];
+
+        return $this->serviceResponse('User login successful', true, $data);
     }
 
 

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -58,7 +59,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === UserType::ADMIN;
+        return $this->role === UserType::ADMIN->value;
     }
 
     public function markAsLoggedIn(): bool
@@ -66,5 +67,10 @@ class User extends Authenticatable
         return $this->forceFill([
             'last_login_at' => $this->freshTimestamp()
         ])->save();
+    }
+
+    public function checkPassword($password): bool
+    {
+        return Hash::check($password, $this->password);
     }
 }

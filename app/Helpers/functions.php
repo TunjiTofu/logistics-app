@@ -6,13 +6,15 @@ use App\Models\User;
 if (!function_exists('generateAuthToken')) {
     function generateAuthToken(User $user, string $identifier, ): string
     {
-        $ability = $user->role === UserType::USER ? 'user-access' : 'admin-access';
+        $user->tokens()->delete();
+
+        $ability = $user->role === UserType::USER->value ? 'user-access' : 'admin-access';
 
         $token = $user->createToken($identifier, [$ability]);
 
-        if ($ability === 'admin-access') {
+        if ($ability === 'user-access') {
             $token->accessToken->update([
-                'expires_at' => now()->addMinutes(30)
+                'expires_at' => now()->addMinutes(60)
             ]);
         }
 

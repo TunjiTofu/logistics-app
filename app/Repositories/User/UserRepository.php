@@ -22,4 +22,9 @@ class UserRepository
     {
         return $this->userModel->where('email', $email)->exists();
     }
+
+    public function getUserByEmail(string $email)
+    {
+        return $this->userModel->where('email', $email)->first();
+    }
 }

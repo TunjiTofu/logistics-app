@@ -27,7 +27,7 @@ class CreateUserDTO extends BaseDTO
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role,
-            'password' => $this->password, // Will be hashed in service
+            'password' => $this->password,
         ];
     }
 }
