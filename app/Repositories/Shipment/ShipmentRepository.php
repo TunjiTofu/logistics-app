@@ -25,7 +25,20 @@ class ShipmentRepository implements ShipmentRepositoryInterface
             $query= Shipment::where('created_by', $userId)->statusFilter();
             return $query->latest()->paginate($data['limit'] ?? Constants::RECORD_LIMIT_PER_PAGE);
         } catch (QueryException $e) {
-            Log::error("Shipment creation query failed: {$e->getMessage()}", [$e]);
+            Log::error("Shipment retrieval query for user failed: {$e->getMessage()}", [$e]);
+            return null;
+        }
+    }
+
+    public function getShipments(array $data)
+    {
+        try {
+            $query= Shipment::with(['user'])
+                ->statusFilter();
+            return $query->latest()->paginate($data['limit'] ?? Constants::RECORD_LIMIT_PER_PAGE);
+
+        } catch (QueryException $e) {
+            Log::error("Shipment retrieval query failed: {$e->getMessage()}", [$e]);
             return null;
         }
     }

@@ -10,12 +10,23 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
-        require __DIR__.'/v1/user/auth.php';
+        require __DIR__ . '/v1/Auth/auth.php';
     });
 
+    // User Routes
     Route::middleware(['auth:sanctum',  'ability:user-access'])->group(function () {
         Route::prefix('shipment')->group(function () {
             require __DIR__.'/v1/user/shipment.php';
         });
     });
+
+    //Admin Routes
+    Route::prefix('admin')->group(function () {
+        Route::middleware(['auth:sanctum',  'ability:admin-access'])->group(function () {
+            Route::prefix('shipment')->group(function () {
+                require __DIR__.'/v1/admin/shipment.php';
+            });
+        });
+    });
+
 });

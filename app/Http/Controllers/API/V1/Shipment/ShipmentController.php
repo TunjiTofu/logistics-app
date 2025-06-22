@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Shipment\CreateShipmentRequest;
 use App\Http\Resources\Shipment\ShipmentCollection;
 use App\Services\Shipment\ShipmentService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +37,7 @@ class ShipmentController extends Controller
      * @param CreateShipmentRequest $request Validated request containing shipment creation data
      * @return JsonResponse Success/error response with shipment details or error message
      *
-     * @throws \Exception When an unexpected error occurs during shipment creation
+     * @throws Exception When an unexpected error occurs during shipment creation
      */
     public function createShipment(CreateShipmentRequest $request): JsonResponse
     {
@@ -49,7 +50,7 @@ class ShipmentController extends Controller
             }
 
             return $this->successResponse($response['message'], $response['data']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             Log::error('Error registering user: ', ['exception' => $exception]);
             return $this->internalErrorResponse('An unexpected error occurred while creating shipment record. Please try again later.');
         }
@@ -64,7 +65,7 @@ class ShipmentController extends Controller
      * @param Request $request HTTP request containing optional filter parameters
      * @return JsonResponse Paginated collection of shipments or error message
      *
-     * @throws \Exception When an unexpected error occurs during shipment retrieval
+     * @throws Exception When an unexpected error occurs during shipment retrieval
      */
     public function getShipments(Request $request): JsonResponse
     {
@@ -76,7 +77,7 @@ class ShipmentController extends Controller
             }
 
             return $this->successResponse($response['message'], new ShipmentCollection($response['data']));
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             Log::error('Error retrieving shipments: ', ['exception' => $exception]);
             return $this->internalErrorResponse('An unexpected error occurred while retrieving shipment records. Please try again later.');
         }

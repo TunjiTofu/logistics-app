@@ -162,9 +162,22 @@ class ShipmentService
         $result = $this->shipmentRepository->getUserShipments($user->getId(), $data);
         if (empty($result)) {
             Log::warning('No Shipment record found for user: ' . $user->getId());;
+            return $this->serviceResponse('No Shipment record available at the moment for '. $user->getId());
+        }
+
+        return $this->serviceResponse('User Shipment records', true, $result);
+    }
+
+    public function getShipments(array $data): array
+    {
+        Log::info('Getting shipment records by Admin');
+        $result = $this->shipmentRepository->getShipments($data);
+
+        if (empty($result)) {
+            Log::warning('No Shipment record found');;
             return $this->serviceResponse('No Shipment record available at the moment');
         }
 
-        return $this->serviceResponse('User Shipment record', true, $result);
+        return $this->serviceResponse('Shipment records', true, $result);
     }
 }
