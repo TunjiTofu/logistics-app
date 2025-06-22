@@ -6,11 +6,13 @@ use App\DTOs\User\CreateShipmentDTO;
 use App\Enums\ShipmentStatusEnum;
 use App\Http\Resources\Shipment\ShipmentResource;
 use App\Jobs\HandleShipmentLogJob;
+use App\Models\User;
 use App\Repositories\Shipment\ShipmentRepositoryInterface;
 use App\Services\Geolocation\GeolocationServiceInterface;
 use App\Services\Logging\LoggingService;
 use App\Traits\ServiceResponseTrait;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -152,5 +154,17 @@ class ShipmentService
     public function generateTrackingNumber(): string
     {
         return Str::uuid()->toString();
+    }
+
+    public function getUserShipments(User $user, array $data): array
+    {
+        Log::info('Getting shipment records for user: ', ['user' => $user->email]);;
+        $result = $this->shipmentRepository->getUserShipments($user->getId(), $data);
+        if (empty($result)) {
+            Log::warning('No Shipment record found for user: ' . $user->getId());;
+            return $this->serviceResponse('No Shipment record available at the moment');
+        }
+
+        return $this->serviceResponse('User Shipment record', true, $result);
     }
 }

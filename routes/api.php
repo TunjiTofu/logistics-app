@@ -13,7 +13,7 @@ Route::prefix('v1')->group(function () {
         require __DIR__.'/v1/user/auth.php';
     });
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum',  'ability:user-access'])->group(function () {
         Route::prefix('shipment')->group(function () {
             require __DIR__.'/v1/user/shipment.php';
         });

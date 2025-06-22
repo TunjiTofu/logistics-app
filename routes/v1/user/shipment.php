@@ -13,4 +13,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(ShipmentController::class)->group(function () {
    Route::post('create', 'createShipment');
+   Route::get('get', 'getShipments');
 });
