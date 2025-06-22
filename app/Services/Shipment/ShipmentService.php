@@ -5,6 +5,7 @@ namespace App\Services\Shipment;
 use App\DTOs\User\CreateShipmentDTO;
 use App\Enums\ShipmentStatusEnum;
 use App\Http\Resources\Shipment\ShipmentResource;
+use App\Jobs\HandleShipmentLogJob;
 use App\Repositories\Shipment\ShipmentRepositoryInterface;
 use App\Services\Logging\LoggingService;
 use App\Traits\ServiceResponseTrait;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
- * Service class for handling shipment-related operations
+ * Service class for handling shipment-related operations including creation,
+ * tracking number generation, and asynchronous logging
  */
 class ShipmentService
 {
@@ -31,11 +33,11 @@ class ShipmentService
     ) {}
 
     /**
-     * Creates a new shipment record
+     * Creates a new shipment record and dispatches an asynchronous logging job
      *
      * @param CreateShipmentDTO $dto Data transfer object containing shipment creation data
      * @param Request $request Current HTTP request instance
-     * @return array Response containing status, message, and shipment data
+     * @return array Response containing status, message, and shipment data with a related user
      */
     public function createShipment(CreateShipmentDTO $dto, Request $request): array
     {
@@ -56,7 +58,8 @@ class ShipmentService
         ]);
 
         // Log the action
-        $this->loggingService->log('Shipment created', $dto->createdBy->getId(), $request->ip(), $shipmentData);
+        $shipmentLogData = $this->prepareShipmentLogData('Shipment created', $dto->createdBy->getId(), $request->ip(), $shipmentData);
+        HandleShipmentLogJob::dispatch($shipmentLogData)->delay(now()->addSeconds(5));
 
         return $this->serviceResponse(
             'Shipment created successfully',
@@ -69,7 +72,7 @@ class ShipmentService
      * Prepares shipment data for creation by merging DTO data with additional required fields
      *
      * @param CreateShipmentDTO $dto Data transfer object containing initial shipment data
-     * @return array Prepared shipment data
+     * @return array Prepared shipment data with tracking number and pending status
      */
     protected function prepareShipmentData(CreateShipmentDTO $dto): array
     {
@@ -80,6 +83,25 @@ class ShipmentService
                 'status' => ShipmentStatusEnum::PENDING->value,
             ]
         );
+    }
+
+    /**
+     * Prepares data for shipment logging
+     *
+     * @param string $action The action being logged
+     * @param int $createdBy User ID who performed the action
+     * @param string $ipAddress IP address of the request
+     * @param array $data Additional metadata to be logged
+     * @return array Prepared log data
+     */
+    protected function prepareShipmentLogData(string $action, int $createdBy, string $ipAddress, array $data): array
+    {
+        return [
+            'action' => $action,
+            'user_id' => $createdBy,
+            'ip_address' => $ipAddress,
+            'metadata' => $data,
+        ];
     }
 
     /**
