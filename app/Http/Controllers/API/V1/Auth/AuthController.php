@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API\V1\Auth;
 
-use App\DTOs\User\CreateUserDTO;
-use App\DTOs\User\UserLoginDTO;
+use App\DTOs\Auth\CreateUserDTO;
+use App\DTOs\Auth\UserLoginDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\UserLoginRequest;
 use App\Http\Requests\Auth\UserSignupRequest;

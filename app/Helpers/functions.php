@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\UserType;
+use App\Enums\UserTypeEnum;
 use App\Models\User;
 
 if (!function_exists('generateAuthToken')) {
@@ -8,7 +8,7 @@ if (!function_exists('generateAuthToken')) {
     {
         $user->tokens()->delete();
 
-        $ability = $user->role === UserType::USER->value ? 'user-access' : 'admin-access';
+        $ability = $user->role === UserTypeEnum::USER->value ? 'user-access' : 'admin-access';
 
         $token = $user->createToken($identifier, [$ability]);
 

@@ -14,16 +14,6 @@ class Shipment extends Model
 
     protected $guarded = ['id'];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Generate tracking number before a shipment record is created in the database
-        static::creating(function ($shipment) {
-            $shipment->tracking_number = '1Z' . strtoupper(Str::random(10));
-        });
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

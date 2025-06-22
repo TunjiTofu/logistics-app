@@ -12,4 +12,10 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         require __DIR__.'/v1/user/auth.php';
     });
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('shipment')->group(function () {
+            require __DIR__.'/v1/user/shipment.php';
+        });
+    });
 });

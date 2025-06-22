@@ -2,8 +2,8 @@
 
 namespace App\Services\Auth;
 
-use App\DTOs\User\CreateUserDTO;
-use App\DTOs\User\UserLoginDTO;
+use App\DTOs\Auth\CreateUserDTO;
+use App\DTOs\Auth\UserLoginDTO;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Repositories\User\UserRepository;
@@ -26,13 +26,13 @@ class AuthenticationService
         Log::info('creating user', ['email' => $dto->email]);
 
         if ($this->userRepository->emailExists($dto->email)) {
-            Log::info('email already exists');
+            Log::warning('email already exists');
             return $this->serviceResponse('This email already exists');
         }
 
         $user = $this->userRepository->createUser($dto);
         if (!$user) {
-            Log::info('user not created');
+            Log::warning('user not created');
             return $this->serviceResponse('User not created');
         }
 
@@ -54,12 +54,12 @@ class AuthenticationService
         $user = $this->userRepository->getUserByEmail($dto->email);
 
         if (!$user) {
-            Log::info('user record not found');;
+            Log::warning('user record not found');;
             return $this->serviceResponse('User record not found');;
         }
 
         if (! $user->checkPassword($dto->password)) {
-            Log::info('Incorrect Password Supplied');
+            Log::warning('Incorrect Password Supplied');
             return $this->serviceResponse('Incorrect Password');
         }
 
@@ -74,7 +74,7 @@ class AuthenticationService
         return $this->serviceResponse('User login successful', true, $data);
     }
 
-    public function logout(Authenticatable $user)
+    public function logout(Authenticatable $user): array
     {
         Log::info('Logging out user', ['user' => $user->email]);
         $user->tokens()->delete();

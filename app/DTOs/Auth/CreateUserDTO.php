@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOs\User;
+namespace App\DTOs\Auth;
 
 use App\DTOs\BaseDTO;
 use App\Http\Requests\Auth\UserSignupRequest;

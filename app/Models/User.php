@@ -3,7 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\UserType;
+use App\Enums\UserTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -52,6 +52,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function getId(): int
+    {
+        return $this->attributes['id'];
+    }
+
     public function shipments(): HasMany
     {
         return $this->hasMany(Shipment::class);
@@ -59,7 +64,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === UserType::ADMIN->value;
+        return $this->role === UserTypeEnum::ADMIN->value;
     }
 
     public function markAsLoggedIn(): bool

@@ -2,15 +2,13 @@
 
 namespace App\Repositories\User;
 
-use App\DTOs\User\CreateUserDTO;
+use App\DTOs\Auth\CreateUserDTO;
 use App\Models\User;
 
 class UserRepository
 {
     public function __construct(protected User $userModel)
-    {
-
-    }
+    {}
 
     public function createUser(CreateUserDTO $dto): ?User
     {
