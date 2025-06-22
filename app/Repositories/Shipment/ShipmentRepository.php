@@ -69,4 +69,13 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         }
     }
 
+    public function findShipmentByTrackingNumber(string $trackingNumber): ?Shipment
+    {
+        try {
+            return Shipment::where('tracking_number', $trackingNumber)->first();
+        } catch (QueryException $e) {
+            Log::error("Shipment query by tracking number failed: {$e->getMessage()}", [$e]);
+            return null;
+        }
+    }
 }

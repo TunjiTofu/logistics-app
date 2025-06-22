@@ -39,7 +39,7 @@ class AuthController extends Controller
     {
         try {
             $dto = UserLoginDTO::fromRequest($request);
-            $response = $this->authenticationService->login($dto);
+            $response = $this->authenticationService->login($dto, $request);
 
             if (!$response['success']) {
                 return $this->errorResponse($response['message']);

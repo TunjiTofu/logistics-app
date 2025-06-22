@@ -19,4 +19,11 @@ class UserLoginDTO extends BaseDTO
     {
         return static::createFromRequest($request->validated());
     }
+
+    public function toLoginData(): array
+    {
+        return [
+            'email' => $this->email,
+        ];
+    }
 }

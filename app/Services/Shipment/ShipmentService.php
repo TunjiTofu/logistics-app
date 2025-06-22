@@ -6,7 +6,7 @@ use App\DTOs\Admin\UpdateShipmentStatusDTO;
 use App\DTOs\User\CreateShipmentDTO;
 use App\Enums\ShipmentStatusEnum;
 use App\Http\Resources\Shipment\ShipmentResource;
-use App\Jobs\HandleShipmentLogJob;
+use App\Jobs\HandleSystemLoggingJob;
 use App\Models\User;
 use App\Repositories\Shipment\ShipmentRepositoryInterface;
 use App\Services\Geolocation\GeolocationServiceInterface;
@@ -69,7 +69,7 @@ class ShipmentService
 
         // Log the action
         $shipmentLogData = $this->prepareShipmentLogData('Shipment created', $dto->createdBy->getId(), $request->ip(), $shipmentData);
-        HandleShipmentLogJob::dispatch($shipmentLogData)->delay(now()->addSeconds(5));
+        HandleSystemLoggingJob::dispatch($shipmentLogData)->delay(now()->addSeconds(5));
 
         return $this->serviceResponse(
             'Shipment created successfully',
@@ -201,8 +201,20 @@ class ShipmentService
 
         // Log the action
         $shipmentStatusUpdateLogData = $this->prepareShipmentLogData('Shipment status updated', $dto->updatedBy->getId(), $request->ip(), $dto->toShipmentUpdateStatusData());
-        HandleShipmentLogJob::dispatch($shipmentStatusUpdateLogData)->delay(now()->addSeconds(5));
+        HandleSystemLoggingJob::dispatch($shipmentStatusUpdateLogData)->delay(now()->addSeconds(5));
 
         return $this->serviceResponse('Shipment status updated', true, ShipmentResource::make($result));
+    }
+
+    public function trackShipment(string $trackingNumber): array
+    {
+        Log::info('Retrieving shipment details', ['tracking_number' => $trackingNumber]);;
+        $shipment = $this->shipmentRepository->findShipmentByTrackingNumber($trackingNumber);
+
+        if (!$shipment) {
+            return $this->serviceResponse('Shipment record not found');
+        }
+
+        return $this->serviceResponse('Shipment record for '.$trackingNumber, true, ShipmentResource::make($shipment));
     }
 }

@@ -27,4 +27,8 @@ Route::prefix('v1')->group(function () {
         });
     });
 
+    //Unguarded Routes
+    require __DIR__.'/v1/utility.php';
+
+
 });

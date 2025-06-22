@@ -5,6 +5,7 @@ namespace App\Services\Auth;
 use App\DTOs\Auth\CreateUserDTO;
 use App\DTOs\Auth\UserLoginDTO;
 use App\Http\Resources\User\UserResource;
+use App\Jobs\HandleSystemLoggingJob;
 use App\Models\User;
 use App\Repositories\User\UserRepository;
 use App\Traits\ServiceResponseTrait;
@@ -47,7 +48,7 @@ class AuthenticationService
         return $this->serviceResponse('User created successfully', true, $data);
     }
 
-    public function login(UserLoginDTO $dto): array
+    public function login(UserLoginDTO $dto, Request $request): array
     {
         Log::info('login in user', ['email' => $dto->email]);
 
@@ -65,6 +66,10 @@ class AuthenticationService
 
         Log::info('user login successful');
         $user->markAsLoggedIn();
+
+        // Log the action
+        $userLoginData = prepareShipmentLogData('User login', $user->getId(), $request->ip(), $dto->toLoginData());
+        HandleSystemLoggingJob::dispatch($userLoginData)->delay(now()->addSeconds(2));
 
         $data = [
             'token' => generateAuthToken($user, $dto->email),

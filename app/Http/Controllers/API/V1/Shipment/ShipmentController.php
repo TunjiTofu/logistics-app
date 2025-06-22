@@ -82,4 +82,20 @@ class ShipmentController extends Controller
             return $this->internalErrorResponse('An unexpected error occurred while retrieving shipment records. Please try again later.');
         }
     }
+
+    public function trackShipment(Request $request, string $trackingNumber): JsonResponse
+    {
+        try {
+            $response = $this->shipmentService->trackShipment($trackingNumber);
+
+            if (!$response['success']) {
+                return $this->errorResponse($response['message']);
+            }
+
+            return $this->successResponse($response['message'], $response['data']);
+        } catch (Exception $exception) {
+            Log::error('Error retrieving shipments: ', ['exception' => $exception]);
+            return $this->internalErrorResponse('An unexpected error occurred while retrieving shipment records. Please try again later.');
+        }
+    }
 }

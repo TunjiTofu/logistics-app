@@ -21,3 +21,17 @@ if (!function_exists('generateAuthToken')) {
         return $token->plainTextToken;
     }
 }
+
+if (!function_exists('prepareShipmentLogData')) {
+    function prepareShipmentLogData(string $action, int $userId, string $ipAddress, array $data): array
+    {
+        return [
+            'action' => $action,
+            'user_id' => $userId,
+            'ip_address' => $ipAddress,
+            'metadata' => $data,
+        ];
+    }
+
+}
+
