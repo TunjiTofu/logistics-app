@@ -48,7 +48,23 @@ class AuthController extends Controller
             return $this->successResponse($response['message'], $response['data']);
         } catch (\Exception $exception) {
             Log::error('Error registering user: ', ['exception' => $exception]);
-            return $this->internalErrorResponse('An unexpected error occurred while creating the user record. Please try again later.');
+            return $this->internalErrorResponse('An unexpected error occurred while logging in the user record. Please try again later.');
+        }
+    }
+
+    public function logout(Request $request): JsonResponse
+    {
+        try {
+            $response = $this->authenticationService->logout($request->user());
+
+            if (!$response['success']) {
+                return $this->errorResponse($response['message']);
+            }
+
+            return $this->successResponse($response['message'], $response['data']);
+        } catch (\Exception $exception) {
+            Log::error('Error registering user: ', ['exception' => $exception]);
+            return $this->internalErrorResponse('An unexpected error occurred while logging out the user. Please try again later.');
         }
     }
 }

@@ -8,6 +8,8 @@ use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Repositories\User\UserRepository;
 use App\Traits\ServiceResponseTrait;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AuthenticationService
@@ -72,5 +74,11 @@ class AuthenticationService
         return $this->serviceResponse('User login successful', true, $data);
     }
 
+    public function logout(Authenticatable $user)
+    {
+        Log::info('Logging out user', ['user' => $user->email]);
+        $user->tokens()->delete();
+        return $this->serviceResponse('User successfully logged out', true);
+    }
 
 }
