@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, HasApiTokens, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
         ];
     }
 
@@ -58,5 +59,12 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === UserType::ADMIN;
+    }
+
+    public function markAsLoggedIn(): bool
+    {
+        return $this->forceFill([
+            'last_login_at' => $this->freshTimestamp()
+        ])->save();
     }
 }
