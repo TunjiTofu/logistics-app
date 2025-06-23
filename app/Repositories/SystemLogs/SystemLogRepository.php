@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 class SystemLogRepository
 {
-
+    /**
+     * @param array $data
+     * @return \Illuminate\Pagination\LengthAwarePaginator|null
+     */
     public function getLogs(array $data)
     {
         try {
