@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-class HandleShipmentLogJob implements ShouldQueue
+class HandleSystemLoggingJob implements ShouldQueue
 {
     use Queueable;
 
@@ -16,7 +16,7 @@ class HandleShipmentLogJob implements ShouldQueue
      */
     public function __construct(protected array $data)
     {
-        Log::info('HandleShipmentLogJob', $this->data);;
+        Log::info('HandleSystemLoggingJob', $this->data);;
     }
 
     /**

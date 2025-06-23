@@ -8,6 +8,8 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 abstract class BaseDTO extends DataTransferObject
 {
     /**
+     * @param array $data
+     * @return static
      * @throws UnknownProperties
      */
     public static function createFromRequest(array $data): static
@@ -15,6 +17,9 @@ abstract class BaseDTO extends DataTransferObject
         return new static($data);
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return (array) $this;

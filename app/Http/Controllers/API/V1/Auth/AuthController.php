@@ -18,6 +18,10 @@ class AuthController extends Controller
     {
     }
 
+    /**
+     * @param UserSignupRequest $request
+     * @return JsonResponse
+     */
     public function register(UserSignupRequest $request): JsonResponse
     {
         try {
@@ -35,11 +39,15 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @param UserLoginRequest $request
+     * @return JsonResponse
+     */
     public function login(UserLoginRequest $request): JsonResponse
     {
         try {
             $dto = UserLoginDTO::fromRequest($request);
-            $response = $this->authenticationService->login($dto);
+            $response = $this->authenticationService->login($dto, $request);
 
             if (!$response['success']) {
                 return $this->errorResponse($response['message']);
@@ -52,6 +60,10 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function logout(Request $request): JsonResponse
     {
         try {

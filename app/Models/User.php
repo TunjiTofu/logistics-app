@@ -57,6 +57,11 @@ class User extends Authenticatable
         return $this->attributes['id'];
     }
 
+    public function getEmail(): string
+    {
+        return $this->attributes['email'];
+    }
+
     public function shipments(): HasMany
     {
         return $this->hasMany(Shipment::class);

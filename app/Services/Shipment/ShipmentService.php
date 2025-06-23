@@ -2,15 +2,18 @@
 
 namespace App\Services\Shipment;
 
+use App\DTOs\Admin\UpdateShipmentStatusDTO;
 use App\DTOs\User\CreateShipmentDTO;
 use App\Enums\ShipmentStatusEnum;
 use App\Http\Resources\Shipment\ShipmentResource;
-use App\Jobs\HandleShipmentLogJob;
+use App\Jobs\HandleSystemLoggingJob;
+use App\Models\User;
 use App\Repositories\Shipment\ShipmentRepositoryInterface;
 use App\Services\Geolocation\GeolocationServiceInterface;
 use App\Services\Logging\LoggingService;
 use App\Traits\ServiceResponseTrait;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -40,10 +43,10 @@ class ShipmentService
      * Creates a new shipment record with geolocation data and dispatches an asynchronous logging job
      *
      * @param CreateShipmentDTO $dto Data transfer object containing shipment creation data
-     * @param Request $request Current HTTP request instance
+     * @param string $ipAddress
      * @return array Response containing status, message, and shipment data with related user
      */
-    public function createShipment(CreateShipmentDTO $dto, Request $request): array
+    public function createShipment(CreateShipmentDTO $dto, string $ipAddress): array
     {
         Log::info('creating shipment', [$dto]);
 
@@ -65,8 +68,8 @@ class ShipmentService
         ]);
 
         // Log the action
-        $shipmentLogData = $this->prepareShipmentLogData('Shipment created', $dto->createdBy->getId(), $request->ip(), $shipmentData);
-        HandleShipmentLogJob::dispatch($shipmentLogData)->delay(now()->addSeconds(5));
+        $shipmentLogData = $this->prepareShipmentLogData('Shipment created', $dto->createdBy->getId(), $ipAddress, $shipmentData);
+        HandleSystemLoggingJob::dispatch($shipmentLogData)->delay(now()->addSeconds(5));
 
         return $this->serviceResponse(
             'Shipment created successfully',
@@ -152,5 +155,66 @@ class ShipmentService
     public function generateTrackingNumber(): string
     {
         return Str::uuid()->toString();
+    }
+
+    public function getUserShipments(User $user, array $data): array
+    {
+        Log::info('Getting shipment records for user: ', ['user' => $user->email]);;
+        $result = $this->shipmentRepository->getUserShipments($user->getId(), $data);
+        if (empty($result)) {
+            Log::warning('No Shipment record found for user: ' . $user->getId());;
+            return $this->serviceResponse('No Shipment record available at the moment for '. $user->getId());
+        }
+
+        return $this->serviceResponse('User Shipment records', true, $result);
+    }
+
+    public function getShipments(array $data): array
+    {
+        Log::info('Getting shipment records by Admin');
+        $result = $this->shipmentRepository->getShipments($data);
+
+        if (empty($result)) {
+            Log::warning('No Shipment record found');;
+            return $this->serviceResponse('No Shipment record available at the moment');
+        }
+
+        return $this->serviceResponse('Shipment records', true, $result);
+    }
+
+    public function updateShipmentStatus(UpdateShipmentStatusDTO $dto, int $shipmentId, Request $request): array
+    {
+        $shipment = $this->shipmentRepository->findShipmentById($shipmentId);
+
+        if (!$shipment) {
+            return $this->serviceResponse('Shipment record not found');
+        }
+
+        Log::info('Updating shipment status by Admin', ['shipment_id' => $shipmentId, 'user_email' => $dto->updatedBy->getEmail()]);;
+
+        $result = $this->shipmentRepository->updateShipmentStatus($dto, $shipmentId);
+
+        if (! $result) {
+            Log::warning('Failed to update shipment status', ['shipment_id' => $shipmentId, 'user_email' => $dto->updatedBy->getEmail()]);;;
+            return $this->serviceResponse('Shipment status not updated');
+        }
+
+        // Log the action
+        $shipmentStatusUpdateLogData = $this->prepareShipmentLogData('Shipment status updated', $dto->updatedBy->getId(), $request->ip(), $dto->toShipmentUpdateStatusData());
+        HandleSystemLoggingJob::dispatch($shipmentStatusUpdateLogData)->delay(now()->addSeconds(5));
+
+        return $this->serviceResponse('Shipment status updated', true, ShipmentResource::make($result));
+    }
+
+    public function trackShipment(string $trackingNumber): array
+    {
+        Log::info('Retrieving shipment details', ['tracking_number' => $trackingNumber]);;
+        $shipment = $this->shipmentRepository->findShipmentByTrackingNumber($trackingNumber);
+
+        if (!$shipment) {
+            return $this->serviceResponse('Shipment record not found');
+        }
+
+        return $this->serviceResponse('Shipment record for '.$trackingNumber, true, ShipmentResource::make($shipment));
     }
 }
