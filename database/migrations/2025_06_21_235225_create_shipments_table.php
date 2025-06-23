@@ -26,6 +26,11 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
+
+            // Added indexes
+            $table->index('status');
+            $table->index('created_by');
+            $table->index(['status', 'created_at']);
         });
     }
 
