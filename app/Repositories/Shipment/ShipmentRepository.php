@@ -54,7 +54,7 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         }
     }
 
-    public function updateShipmentStatus(UpdateShipmentStatusDTO $dto, int $shipmentId)
+    public function updateShipmentStatus(UpdateShipmentStatusDTO $dto, int $shipmentId): ?Shipment
     {
         try {
             $shipment = Shipment::find($shipmentId);
