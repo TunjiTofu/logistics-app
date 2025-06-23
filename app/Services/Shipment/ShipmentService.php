@@ -43,10 +43,10 @@ class ShipmentService
      * Creates a new shipment record with geolocation data and dispatches an asynchronous logging job
      *
      * @param CreateShipmentDTO $dto Data transfer object containing shipment creation data
-     * @param Request $request Current HTTP request instance
+     * @param string $ipAddress
      * @return array Response containing status, message, and shipment data with related user
      */
-    public function createShipment(CreateShipmentDTO $dto, Request $request): array
+    public function createShipment(CreateShipmentDTO $dto, string $ipAddress): array
     {
         Log::info('creating shipment', [$dto]);
 
@@ -68,7 +68,7 @@ class ShipmentService
         ]);
 
         // Log the action
-        $shipmentLogData = $this->prepareShipmentLogData('Shipment created', $dto->createdBy->getId(), $request->ip(), $shipmentData);
+        $shipmentLogData = $this->prepareShipmentLogData('Shipment created', $dto->createdBy->getId(), $ipAddress, $shipmentData);
         HandleSystemLoggingJob::dispatch($shipmentLogData)->delay(now()->addSeconds(5));
 
         return $this->serviceResponse(

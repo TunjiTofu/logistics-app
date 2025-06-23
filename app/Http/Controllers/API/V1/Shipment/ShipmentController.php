@@ -43,7 +43,7 @@ class ShipmentController extends Controller
     {
         try {
             $dto = CreateShipmentDTO::fromRequest($request);
-            $response = $this->shipmentService->createShipment($dto, $request);
+            $response = $this->shipmentService->createShipment($dto, $request->ip());
 
             if (!$response['success']) {
                 return $this->errorResponse($response['message']);

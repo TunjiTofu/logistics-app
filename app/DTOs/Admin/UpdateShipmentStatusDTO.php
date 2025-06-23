@@ -15,6 +15,8 @@ class UpdateShipmentStatusDTO extends BaseDTO
 
 
     /**
+     * @param UpdateShipmentStatusRequest $request
+     * @return self
      * @throws UnknownProperties
      */
     public static function fromRequest(UpdateShipmentStatusRequest $request): self
@@ -26,6 +28,9 @@ class UpdateShipmentStatusDTO extends BaseDTO
         return new static($data);
     }
 
+    /**
+     * @return array
+     */
     public function toShipmentUpdateStatusData(): array
     {
         return [

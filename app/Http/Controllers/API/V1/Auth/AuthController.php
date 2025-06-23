@@ -18,6 +18,10 @@ class AuthController extends Controller
     {
     }
 
+    /**
+     * @param UserSignupRequest $request
+     * @return JsonResponse
+     */
     public function register(UserSignupRequest $request): JsonResponse
     {
         try {
@@ -35,6 +39,10 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @param UserLoginRequest $request
+     * @return JsonResponse
+     */
     public function login(UserLoginRequest $request): JsonResponse
     {
         try {
@@ -52,6 +60,10 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function logout(Request $request): JsonResponse
     {
         try {

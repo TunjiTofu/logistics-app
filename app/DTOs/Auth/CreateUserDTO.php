@@ -14,6 +14,8 @@ class CreateUserDTO extends BaseDTO
     public string $password;
 
     /**
+     * @param UserSignupRequest $request
+     * @return self
      * @throws UnknownProperties
      */
     public static function fromRequest(UserSignupRequest $request): self
@@ -21,6 +23,9 @@ class CreateUserDTO extends BaseDTO
         return static::createFromRequest($request->validated());
     }
 
+    /**
+     * @return array
+     */
     public function toUserData(): array
     {
         return [
