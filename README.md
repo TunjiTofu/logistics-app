@@ -20,7 +20,7 @@ This Laravel backend API provides a comprehensive solution for shipment manageme
 
 ### 1. Clone Repository
 ```bash
-git clone [https://github.com/TunjiTofu/logistics-platform.git](https://github.com/TunjiTofu/logistics-app.git)
+git clone (https://github.com/TunjiTofu/logistics-app.git)
 cd logistics-platform
 composer install
 ```
@@ -109,5 +109,5 @@ OPENCAGE_API_KEY=your_api_key_here
  - Integrate with mobile applications
 
 ## API Documentation
-[Click this Link Access the Complete API Documentation]([https://documenter.getpostman.com/view/17648045/2sB2xCh9Lx](https://documenter.getpostman.com/view/17648045/2sB2xCh9Lx))
+[Click this Link Access the Complete API Documentation](https://documenter.getpostman.com/view/17648045/2sB2xCh9Lx)
 
