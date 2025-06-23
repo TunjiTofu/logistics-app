@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 class ShipmentRepository implements ShipmentRepositoryInterface
 {
+    /**
+     * @param int $id
+     * @return Shipment|null
+     */
     public function findShipmentById(int $id): ?Shipment
     {
         try {
@@ -20,6 +24,10 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         }
     }
 
+    /**
+     * @param array $data
+     * @return Shipment|null
+     */
     public function createShipment(array $data): ?Shipment
     {
         try {
@@ -30,6 +38,11 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         }
     }
 
+    /**
+     * @param $userId
+     * @param array $data
+     * @return null
+     */
     public function getUserShipments($userId, array $data)
     {
         try {
@@ -41,6 +54,10 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         }
     }
 
+    /**
+     * @param array $data
+     * @return null
+     */
     public function getShipments(array $data)
     {
         try {
@@ -54,6 +71,11 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         }
     }
 
+    /**
+     * @param UpdateShipmentStatusDTO $dto
+     * @param int $shipmentId
+     * @return Shipment|null
+     */
     public function updateShipmentStatus(UpdateShipmentStatusDTO $dto, int $shipmentId): ?Shipment
     {
         try {
@@ -69,6 +91,10 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         }
     }
 
+    /**
+     * @param string $trackingNumber
+     * @return Shipment|null
+     */
     public function findShipmentByTrackingNumber(string $trackingNumber): ?Shipment
     {
         try {

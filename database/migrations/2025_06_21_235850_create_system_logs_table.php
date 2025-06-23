@@ -19,6 +19,12 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            // Added indexes
+            $table->index('action');
+            $table->index('user_id');
+            $table->index(['action', 'created_at']);
+            $table->index(['user_id', 'created_at']);
         });
     }
 
