@@ -21,7 +21,7 @@ This Laravel backend API provides a comprehensive solution for shipment manageme
 ### 1. Clone Repository
 ```bash
 git clone https://github.com/TunjiTofu/logistics-app.git
-cd logistics-platform
+cd logistics-app
 composer install
 ```
 
